@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView textView;
     Spinner third_real_item;
     EditText id1,id2,id3;
+    public static String TAG = "tap anti";
     AntiAddictionKit.AntiAddictionCallback protectCallBack;
     int payNum = 0;
     int third_real_type = 0;
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protectCallBack = new AntiAddictionKit.AntiAddictionCallback() {
             @Override
             public void onAntiAddictionResult(int resultCode, String msg) {
+                Log.e(TAG, "code: " + resultCode);
                 switch (resultCode){
                     case AntiAddictionKit.CALLBACK_CODE_SWITCH_ACCOUNT:
                         toast("logout success");
