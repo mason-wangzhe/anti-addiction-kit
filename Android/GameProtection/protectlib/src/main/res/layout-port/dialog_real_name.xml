@@ -91,7 +91,8 @@
             android:imeOptions="flagNoFullscreen|flagNavigateNext"
             android:textColorHint="#bbbbbb"
             android:textCursorDrawable="@null"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/bt_submit"
