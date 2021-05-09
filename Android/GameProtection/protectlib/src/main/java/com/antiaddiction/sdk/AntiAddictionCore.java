@@ -16,6 +16,7 @@ import com.antiaddiction.sdk.service.ConfigService;
 import com.antiaddiction.sdk.service.CountTimeService;
 import com.antiaddiction.sdk.service.PayStrictService;
 import com.antiaddiction.sdk.service.PlayLogService;
+import com.antiaddiction.sdk.service.ServerApi;
 import com.antiaddiction.sdk.service.UserService;
 import com.antiaddiction.sdk.utils.AesUtil;
 import com.antiaddiction.sdk.utils.LogUtil;
@@ -40,11 +41,16 @@ public class AntiAddictionCore {
         @Override
         public void handleMessage(Message msg) {
             int what = msg.what;
+            String msgStr = "";
+            if (msg.obj instanceof String) {
+                msgStr = (String) msg.obj;
+            }
             switch (what) {
                 case AntiAddictionKit.CALLBACK_CODE_LOGIN_SUCCESS:
                     hasLogin = true;
+
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_LOGIN_SUCCESS, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_LOGIN_SUCCESS, msgStr);
                     }
                     if (!isForeign && getCurrentUser().getAccountType() != AntiAddictionKit.USER_TYPE_ADULT) {
                         startCountTimeService();
@@ -53,7 +59,7 @@ public class AntiAddictionCore {
                 case AntiAddictionKit.CALLBACK_CODE_SWITCH_ACCOUNT:
                     hasLogin = false;
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_SWITCH_ACCOUNT, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_SWITCH_ACCOUNT, msgStr);
                     }
                     currentUser = null;
                     CountTimeService.changeLoginState(false);
@@ -69,12 +75,12 @@ public class AntiAddictionCore {
                         AntiAddictionPlatform.dismissCountTimePopByLoginStateChange();
                     }
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_REAL_NAME_FAIL:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_FAIL, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_FAIL, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_PAY_NO_LIMIT:
@@ -85,7 +91,7 @@ public class AntiAddictionCore {
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_TIME_LIMIT:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_TIME_LIMIT, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_TIME_LIMIT, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_OPEN_REAL_NAME:
@@ -96,27 +102,27 @@ public class AntiAddictionCore {
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_CHAT_LIMIT:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_CHAT_LIMIT, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_CHAT_LIMIT, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_CHAT_NO_LIMIT:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_CHAT_NO_LIMIT, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_CHAT_NO_LIMIT, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_SHOWN:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_SHOWN, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_SHOWN, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_DISMISS:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_DISMISS, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_AAK_WINDOW_DISMISS, msgStr);
                     }
                     break;
                 case AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED:
                     if (null != protectCallBack) {
-                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED, "");
+                        protectCallBack.onAntiAddictionResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED, msgStr);
                     }
                     break;
             }
@@ -143,6 +149,8 @@ public class AntiAddictionCore {
         return new OnResultListener() {
             @Override
             public void onResult(int type, String msg) {
+                Exception e = new Exception(String.format("get callback, type=%d, msg=%s", type, msg));
+                e.printStackTrace();
                 Message message = mainHandler.obtainMessage();
                 message.what = type;
                 message.obj = msg;
@@ -192,6 +200,7 @@ public class AntiAddictionCore {
                 if(!AntiAddictionKit.getFunctionConfig().getSupportSubmitToServer()) {
                     currentUser = UserDao.getUser(activity, userId);
                     //本地未存储用户信息
+                    // todo: 本地存储了吗？
                     if (null == currentUser) {
                         currentUser = new User(userId);
                         currentUser.setAccountType(userType);
@@ -505,10 +514,10 @@ public class AntiAddictionCore {
                     @Override
                     public void onResult(int type, String msg) {
                         if (type == AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS) {
-                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED, "");
-                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, "");
+                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED, msg);
+                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, msg);
                         } else {
-                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_FAIL, "");
+                            getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_FAIL, msg);
                         }
                     }
                 });
@@ -629,7 +638,7 @@ public class AntiAddictionCore {
                                                         } else {
                                                             if (type != 0) {
                                                                 if(type == AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS){
-                                                                    getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED,"");
+                                                                    getCallBack().onResult(AntiAddictionKit.CALLBACK_CODE_USER_TYPE_CHANGED, msg);
                                                                 }else {
                                                                     getCallBack().onResult(type, msg);
                                                                 }
@@ -663,6 +672,7 @@ public class AntiAddictionCore {
      * @param name
      * @param identify
      * @param phone
+     * todo:这里到底存储了吗
      */
     public static void resetUserInfo(String name, String identify, String phone) {
         if (getCurrentUser() != null) {
@@ -698,8 +708,12 @@ public class AntiAddictionCore {
             }else{
                 //从服务端获取只有年龄
                 int type = Integer.parseInt(identify);
-                getCurrentUser().setAccountType(type);
+                User user = getCurrentUser();
+                user.setAccountType(type);
+                user.setUserName(name);
+                user.setPhone(phone);
                 resetGameLimitInfo();
+                saveUserInfo();
             }
         }
     }

@@ -3,10 +3,13 @@ package com.antiaddiction.sdk;
 import android.app.Activity;
 import android.util.Log;
 
+import com.antiaddiction.sdk.service.ServerApi;
 import com.antiaddiction.sdk.utils.LogUtil;
 import com.antiaddiction.sdk.utils.TimeUtil;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class AntiAddictionKit {
     //用户类型
@@ -189,7 +192,11 @@ public class AntiAddictionKit {
         private boolean useSdkOnlineTimeLimit = true;
         private boolean showSwitchAccountButton = true;
         private String server_host=null;
-        private FunctionConfig(){}
+        private HashMap<ServerApi, String> ApiHost = new HashMap<>();
+        private String test_host = "http://hd1.kjsoft.top/realname";
+        private FunctionConfig(){
+            ApiHost.put(ServerApi.REAL_USER_INFO, test_host);
+        }
         private static FunctionConfig getInstance(){
             return INSTANCE;
         }
@@ -226,6 +233,10 @@ public class AntiAddictionKit {
             return INSTANCE.server_host;
         }
 
+        public  String getHost(ServerApi api){
+            String s = ApiHost.get(api);
+            return s;
+        }
         public boolean getUseSdkOnlineTimeLimit(){
             return INSTANCE.useSdkOnlineTimeLimit;
         }
@@ -243,6 +254,11 @@ public class AntiAddictionKit {
 
         public boolean getSupportSubmitToServer(){
             return INSTANCE.server_host != null;
+        }
+
+        public boolean getSupportSubmitToServer(ServerApi api){
+            String s = ApiHost.get(api);
+            return s != null;
         }
     }
    

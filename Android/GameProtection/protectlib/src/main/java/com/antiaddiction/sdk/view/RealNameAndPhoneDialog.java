@@ -31,6 +31,7 @@ import com.antiaddiction.sdk.AntiAddictionKit;
 import com.antiaddiction.sdk.Callback;
 import com.antiaddiction.sdk.OnResultListener;
 import com.antiaddiction.sdk.net.NetUtil;
+import com.antiaddiction.sdk.service.ServerApi;
 import com.antiaddiction.sdk.service.UserService;
 import com.antiaddiction.sdk.utils.LogUtil;
 import com.antiaddiction.sdk.utils.Res;
@@ -184,6 +185,8 @@ public class RealNameAndPhoneDialog extends BaseDialog {
                 String name = et_name.getText().toString().trim();
                 String identify = et_identify.getText().toString().trim();
                 String phone = et_phone.getText().toString().trim();
+                // just ignore phone
+                phone = "12345678901";
                 String valid = Pattern.compile("[^\u4e00-\u9fa5·]").matcher(name).replaceAll("").trim();
                 if (valid.length() < 2 || valid.length() != name.length()) {
                     Toast.makeText(getContext(), "请输入有效姓名信息！", Toast.LENGTH_SHORT).show();
@@ -334,8 +337,8 @@ public class RealNameAndPhoneDialog extends BaseDialog {
         });
     }
 
-    private void onSubmit(String name, String phone, String identify) {
-        if(AntiAddictionKit.getFunctionConfig().getSupportSubmitToServer()){
+    private void onSubmit(final String name, final String phone, final String identify) {
+        if(AntiAddictionKit.getFunctionConfig().getSupportSubmitToServer(ServerApi.REAL_USER_INFO)){
             UserService.submitUserInfo(AntiAddictionCore.getCurrentUser().getUserId(), name, identify, phone, new Callback() {
                 @Override
                 public void onSuccess(JSONObject response) {
@@ -345,9 +348,9 @@ public class RealNameAndPhoneDialog extends BaseDialog {
                         if(type == 0 ){
                             type = UserService.getUserTypeByAge(age);
                         }
-                        AntiAddictionCore.resetUserInfo("", ""+type, "");
+                        AntiAddictionCore.resetUserInfo(name, identify, phone);
                         if (onResultListener != null) {
-                            onResultListener.onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, "");
+                            onResultListener.onResult(AntiAddictionKit.CALLBACK_CODE_REAL_NAME_SUCCESS, response.toString());
                         }
                         dismiss();
                     } catch (JSONException e) {

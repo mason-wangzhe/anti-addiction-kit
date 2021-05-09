@@ -1,4 +1,4 @@
-package com.seraph.gameprotection;
+    package com.seraph.gameprotection;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protectCallBack = new AntiAddictionKit.AntiAddictionCallback() {
             @Override
             public void onAntiAddictionResult(int resultCode, String msg) {
-                Log.e(TAG, "code: " + resultCode);
+                Log.e(TAG, String.format("code: %d, msg=%s", resultCode, msg));
                 switch (resultCode){
                     case AntiAddictionKit.CALLBACK_CODE_SWITCH_ACCOUNT:
                         toast("logout success");
@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.netLink:
                 netLinkState = !netLinkState;
                 if(netLinkState){
-                    AntiAddictionKit.getFunctionConfig().setHost("localhost:8080"); //游戏需要更换为自己服务器的域名
+                    AntiAddictionKit.getFunctionConfig().setHost("http://192.168.5.109:5000/realname"); //游戏需要更换为自己服务器的域名
                     netLink.setText("联网模式：开");
                 }else{
                     AntiAddictionKit.getFunctionConfig().setHost(null);
@@ -406,28 +406,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param userId
      */
     void getUserToken(final String userId){
-        HttpUtil.getAsync("localhost:8080/create_user_token?user_id=" + userId, new NetUtil.NetCallback() {
-            @Override
-            public void onSuccess(String response) {
-                LogUtil.logd("getAccess token success = " + response);
-                Message msg = handler.obtainMessage();
-                msg.what = LOGIN;
-                try {
-                    String id_1 = id1.getText().toString().trim();
-                    String id_2 = id2.getText().toString().trim();
-                    msg.obj = new JSONObject(response).getString("token");
-                    msg.arg1 =  userId.contains(id1.getText().toString().trim()) ? 0 : (userId.contains(id2.getText().toString().trim()) ? AntiAddictionKit.USER_TYPE_CHILD : AntiAddictionKit.USER_TYPE_ADULT);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                handler.sendMessage(msg);
-            }
-
-            @Override
-            public void onFail(int code, String message) {
-                LogUtil.logd("get token fail code = " + code + " msg= " + message);
-//                Toast.makeText(MainActivity.this,"网络连接失败 msg = " + message,Toast.LENGTH_SHORT).show();
-            }
-        });
+        Message msg = handler.obtainMessage();
+        msg.what = LOGIN;
+        msg.obj = "test token";
+        msg.arg1 =  userId.contains(id1.getText().toString().trim()) ? 0 : (userId.contains(id2.getText().toString().trim()) ? AntiAddictionKit.USER_TYPE_CHILD : AntiAddictionKit.USER_TYPE_ADULT);
+        handler.sendMessage(msg);
+        LogUtil.logd("getAccess token success = " + msg.obj);
+        return;
+//        HttpUtil.getAsync("http://localhost:8080/create_user_token?user_id=" + userId, new NetUtil.NetCallback() {
+//            @Override
+//            public void onSuccess(String response) {
+//                LogUtil.logd("getAccess token success = " + response);
+//                Message msg = handler.obtainMessage();
+//                msg.what = LOGIN;
+//                try {
+//                    String id_1 = id1.getText().toString().trim();
+//                    String id_2 = id2.getText().toString().trim();
+//                    msg.obj = new JSONObject(response).getString("token");
+//                    msg.arg1 =  userId.contains(id1.getText().toString().trim()) ? 0 : (userId.contains(id2.getText().toString().trim()) ? AntiAddictionKit.USER_TYPE_CHILD : AntiAddictionKit.USER_TYPE_ADULT);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                handler.sendMessage(msg);
+//            }
+//
+//            @Override
+//            public void onFail(int code, String message) {
+//                LogUtil.logd("get token fail code = " + code + " msg= " + message);
+////                Toast.makeText(MainActivity.this,"网络连接失败 msg = " + message,Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 }
