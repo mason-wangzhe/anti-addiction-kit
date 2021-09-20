@@ -1,7 +1,6 @@
 package com.antiaddiction.sdk;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.antiaddiction.sdk.service.ServerApi;
 import com.antiaddiction.sdk.utils.LogUtil;
@@ -193,9 +192,12 @@ public class AntiAddictionKit {
         private boolean showSwitchAccountButton = true;
         private String server_host=null;
         private HashMap<ServerApi, String> ApiHost = new HashMap<>();
-        private String test_host = "http://hd1.kjsoft.top/realname";
+        private String test_host = "http://192.168.29.1/realname";
+        private String real_host = "http://hd1.kjsoft.top/realname";
         private FunctionConfig(){
-            ApiHost.put(ServerApi.REAL_USER_INFO, test_host);
+            String host = real_host;
+            ApiHost.put(ServerApi.REAL_USER_INFO, host);
+            ApiHost.put(ServerApi.CONFIG, host);
         }
         private static FunctionConfig getInstance(){
             return INSTANCE;
@@ -503,7 +505,7 @@ public class AntiAddictionKit {
                         INSTANCE.version = config.getString("version");
                         LogUtil.logd("update config version = " + INSTANCE.version);
                         JSONObject data = config.getJSONObject("config");
-                        // INSTANCE.guestTime = data.optInt("guestTime", 60 * 60);
+                        INSTANCE.guestTime = data.optInt("guestTime", 60 * 60);
                         INSTANCE.childCommonTime = data.optInt("childCommonTime", 30 * 60);
                         INSTANCE.nightStrictStart = TimeUtil.getTimeByClock(data.optString("nightStrictStart", "22:00"));
                         INSTANCE.nightStrictEnd = TimeUtil.getTimeByClock(data.optString("nightStrictEnd", "08:00"));

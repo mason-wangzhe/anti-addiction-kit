@@ -1,42 +1,35 @@
     package com.seraph.gameprotection;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+    import android.content.BroadcastReceiver;
+    import android.content.Context;
+    import android.content.Intent;
+    import android.content.IntentFilter;
+    import android.content.pm.ActivityInfo;
+    import android.os.Bundle;
+    import android.os.Handler;
+    import android.os.Message;
+    import android.util.Log;
+    import android.view.KeyEvent;
+    import android.view.View;
+    import android.view.WindowManager;
+    import android.widget.AdapterView;
+    import android.widget.ArrayAdapter;
+    import android.widget.Button;
+    import android.widget.EditText;
+    import android.widget.Spinner;
+    import android.widget.TextView;
+    import android.widget.Toast;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+    import androidx.annotation.NonNull;
+    import androidx.appcompat.app.AppCompatActivity;
 
-import com.antiaddiction.debug.R;
-import com.antiaddiction.sdk.AntiAddictionKit;
-import com.antiaddiction.sdk.AntiAddictionPlatform;
-import com.antiaddiction.sdk.net.HttpUtil;
-import com.antiaddiction.sdk.net.NetUtil;
-import com.antiaddiction.sdk.utils.AesUtil;
-import com.antiaddiction.sdk.utils.LogUtil;
+    import com.antiaddiction.debug.R;
+    import com.antiaddiction.sdk.AntiAddictionKit;
+    import com.antiaddiction.sdk.AntiAddictionPlatform;
+    import com.antiaddiction.sdk.utils.LogUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
+    import java.util.ArrayList;
+    import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -372,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.netLink:
                 netLinkState = !netLinkState;
                 if(netLinkState){
-                    AntiAddictionKit.getFunctionConfig().setHost("http://192.168.5.109:5000/realname"); //游戏需要更换为自己服务器的域名
+                    AntiAddictionKit.getFunctionConfig().setHost("http://localhost/realname"); //游戏需要更换为自己服务器的域名
                     netLink.setText("联网模式：开");
                 }else{
                     AntiAddictionKit.getFunctionConfig().setHost(null);

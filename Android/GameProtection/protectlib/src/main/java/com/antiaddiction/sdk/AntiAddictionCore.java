@@ -1,13 +1,11 @@
 package com.antiaddiction.sdk;
 
 import android.app.Activity;
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
 
 import com.antiaddiction.sdk.dao.RegionDao;
 import com.antiaddiction.sdk.dao.UserDao;
@@ -134,7 +132,7 @@ public class AntiAddictionCore {
         AntiAddictionCore.activity = activity;
         AntiAddictionCore.protectCallBack = protectCallBack;
         AntiAddictionPlatform.setActivity(activity);
-        if(AntiAddictionKit.getFunctionConfig().getSupportSubmitToServer()) {
+        if(AntiAddictionKit.getFunctionConfig().getSupportSubmitToServer(ServerApi.CONFIG)) {
             ConfigService.getConfigFromServer();
         }
         inited = true;
