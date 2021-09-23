@@ -304,11 +304,11 @@ public class AntiAddictionKit {
         private String version = "0.0.1";
         private String unIdentifyFirstLogin ="您当前为游客账号，根据国家相关规定，游客账号享有#分钟#游戏体验时间。登记实名信息后可深度体验。";
         private String unIdentifyRemain = "您当前为游客账号，游戏体验时间还剩余#分钟#。登记实名信息后可深度体验。";
-        private String unIdentifyLimit = "您的游戏体验时长已达#分钟#。登记实名信息后可深度体验。";
-        private String identifyLimit = "您今日游戏时间已达#分钟#。根据国家相关规定，今日无法再进行游戏。请注意适当休息。";
+        private String unIdentifyLimit = "您的游戏体验时长已达%d分钟。登记实名信息后可深度体验。";
+        private String identifyLimit = "您今日游戏时间已达%d分钟。根据国家相关规定，今日无法再进行游戏。请注意适当休息。";
         private String identifyRemain = "您今日游戏时间还剩余#分钟#，请注意适当休息。";
         private String nightStrictRemain = "距离健康保护时间还剩余#分钟#，请注意适当休息。";
-        private String nightStrictLimit = "根据国家相关规定，每日 22 点 - 次日 8 点为健康保护时段，当前无法进入游戏。";
+        private String nightStrictLimit = "根据国家相关规定，每日 %d 点 - 次日 %d 点为健康保护时段，当前无法进入游戏。";
 
         private CommonConfig(){
         }
@@ -491,11 +491,15 @@ public class AntiAddictionKit {
         }
 
         public String getUnIdentifyFirstLogin(){
-            return INSTANCE.unIdentifyFirstLogin;
+            return INSTANCE.unIdentifyFirstLogin.replace("#分钟#", String.format("%d分钟", getGuestTime() / 60));
         }
 
         public String getUnIdentifyRemain(){
             return INSTANCE.unIdentifyRemain;
+        }
+
+        public String getUnIdentifyRemain(int leftmin){
+            return INSTANCE.unIdentifyRemain.replace("#分钟#", String.format("%d分钟", leftmin / 60));
         }
 
         public void praseJson(JSONObject config) {
@@ -528,6 +532,30 @@ public class AntiAddictionKit {
                 }
 
             }
+        }
+
+        public String getUnIdentifyLimit() {
+            return String.format(unIdentifyLimit, getGuestTime() / 60);
+        }
+
+        public void setUnIdentifyLimit(String unIdentifyLimit) {
+            this.unIdentifyLimit = unIdentifyLimit;
+        }
+
+        public String getNightStrictLimit(int startHour, int endHour) {
+            return String.format(nightStrictLimit, startHour, endHour);
+        }
+
+        public void setNightStrictLimit(String nightStrictLimit) {
+            this.nightStrictLimit = nightStrictLimit;
+        }
+
+        public String getIdentifyLimit(int playMin) {
+            return String.format(identifyLimit, playMin);
+        }
+
+        public void setIdentifyLimit(String identifyLimit) {
+            this.identifyLimit = identifyLimit;
         }
     }
 
